@@ -3,16 +3,22 @@ import requests as req
 
 
 class Bot:
-    checking_options = {'offset': 0, 'limit': 0, 'timeout': 0}
 
-    def __init__(self, bot_token):
+    __checking_options = {'offset': 0, 'limit': 0, 'timeout': 0}
+    "contains settings of request for checking updates"
+
+    __sleeping_time = 1
+    "need to avoid too frequent requests to the telegram server"
+
+    def __init__(self, bot_token, sleeping_time=1):
         self.api_link = f'https://api.telegram.org/bot{bot_token}'
+        self.__sleeping_time = sleeping_time
 
     def run(self):
         while True:
             try:
                 self.update()
-                sleep(1)
+                sleep(self.__sleeping_time)
 
             except KeyboardInterrupt:
                 print('Interrupted by yourself')
@@ -26,7 +32,7 @@ class Bot:
 
     def check_updates(self):
         try:
-            request = req.post(self.api_link + '/getUpdates', data=self.checking_options).json()
+            request = req.post(self.api_link + '/getUpdates', data=self.__checking_options).json()
 
         except Exception:
             print('error getting updates')
@@ -39,7 +45,7 @@ class Bot:
 
     def make_response(self, request):
         for update in request['result']:
-            self.checking_options['offset'] = update['update_id'] + 1
+            self.__checking_options['offset'] = update['update_id'] + 1
 
             message = 'hello'
             if 'message' not in update or 'text' not in update['message']:
