@@ -27,6 +27,7 @@ class Bot:
     def check_updates(self):
         try:
             request = req.post(self.api_link + '/getUpdates', data=self.checking_options).json()
+
         except Exception:
             print('error getting updates')
             return False
@@ -53,11 +54,9 @@ class Bot:
 
             try:
                 request = req.post(self.api_link + '/sendMessage', data=message_data)
-                username = update['message']['chat']['first_name']
-                print(f"sending message to {username}")
             except Exception:
                 print('Send message error')
                 return False
 
-            if not request.status_code == 200:
-                return False
+            username = update['message']['chat']['first_name']
+            print(f"sending message to {username}")
