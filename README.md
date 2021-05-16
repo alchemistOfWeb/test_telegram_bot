@@ -16,3 +16,7 @@ Then you can start bot by the following command:
 After that, bot is working.
 
 To stop it you can use `Ctrl+c` in the console
+
+## Bot can...
+* Answer 'Hello' on each your text message
+* Answer "I can't understand it" in other cases
