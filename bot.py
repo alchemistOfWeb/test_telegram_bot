@@ -1,27 +1,33 @@
-import main
+from time import sleep
+import requests as req
+
 
 class Bot:
     checking_options = {'offset': 0, 'limit': 0, 'timeout': 0}
 
-    def start(self):
+    def __init__(self, bot_token):
+        self.API_LINK = f'https://api.telegram.org/bot{bot_token}'
+
+    def run(self):
         while True:
             try:
-                self.update()
-                main.sleep(1)
+                sleep(1)
+                request = self.check_updates()
+
+                if request:
+                    self.make_response(request)
+
             except KeyboardInterrupt:
-                print('Interrupted by the user')
+                print('Interrupted by yourself')
                 break
 
     def update(self):
-        request = self.check_updates()
-        if request:
-            self.make_response(request)
+        pass
 
     def check_updates(self):
         try:
-            request = main.req.post(main.config.API_LINK + '/getUpdates', data=self.checking_options).json()
-            # assert request.status_code == 200
-        except:
+            request = req.post(self.API_LINK + '/getUpdates', data=self.checking_options).json()
+        except Exception:
             print('Error getting updates')
             return False
 
@@ -46,8 +52,8 @@ class Bot:
             }
 
             try:
-                request = main.req.post(main.config.API_LINK + '/sendMessage', data=message_data)
-            except:
+                request = req.post(self.API_LINK + '/sendMessage', data=message_data)
+            except Exception:
                 print('Send message error')
                 return False
 
