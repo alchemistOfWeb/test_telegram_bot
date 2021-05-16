@@ -6,32 +6,32 @@ class Bot:
     checking_options = {'offset': 0, 'limit': 0, 'timeout': 0}
 
     def __init__(self, bot_token):
-        self.API_LINK = f'https://api.telegram.org/bot{bot_token}'
+        self.api_link = f'https://api.telegram.org/bot{bot_token}'
 
     def run(self):
         while True:
             try:
+                self.update()
                 sleep(1)
-                request = self.check_updates()
-
-                if request:
-                    self.make_response(request)
 
             except KeyboardInterrupt:
                 print('Interrupted by yourself')
                 break
 
     def update(self):
-        pass
+        request = self.check_updates()
+
+        if request:
+            self.make_response(request)
 
     def check_updates(self):
         try:
-            request = req.post(self.API_LINK + '/getUpdates', data=self.checking_options).json()
+            request = req.post(self.api_link + '/getUpdates', data=self.checking_options).json()
         except Exception:
-            print('Error getting updates')
+            print('error getting updates')
             return False
 
-        if not request['ok']:
+        if not request['ok'] or not request['result']:
             return False
 
         return request
@@ -52,11 +52,12 @@ class Bot:
             }
 
             try:
-                request = req.post(self.API_LINK + '/sendMessage', data=message_data)
+                request = req.post(self.api_link + '/sendMessage', data=message_data)
+                username = update['message']['chat']['first_name']
+                print(f"sending message to {username}")
             except Exception:
                 print('Send message error')
                 return False
 
-            if not request.status_code == 200:  # проверим статус пришедшего ответа
+            if not request.status_code == 200:
                 return False
-
